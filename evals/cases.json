@@ -1,0 +1,118 @@
+[
+  {
+    "id": "mig-duty-exact",
+    "prompt": "What's the duty cycle for MIG welding at 200A on 240V?",
+    "mode": "answer",
+    "answerIncludes": ["25%", "2.5 minutes", "7.5 minutes"],
+    "citationPages": [19],
+    "artifactTypes": ["duty-cycle", "manual-page"]
+  },
+  {
+    "id": "tig-duty-exact",
+    "prompt": "At 175A on 240V, what is the TIG duty cycle?",
+    "mode": "answer",
+    "answerIncludes": ["30%", "3 minutes", "7 minutes"],
+    "citationPages": [29],
+    "artifactTypes": ["duty-cycle", "manual-page"]
+  },
+  {
+    "id": "stick-duty-continuous",
+    "prompt": "Can I run Stick at 60A continuously on 120V? What is the duty cycle?",
+    "mode": "answer",
+    "answerIncludes": ["100%", "10 minutes", "0 minutes"],
+    "citationPages": [29],
+    "artifactTypes": ["duty-cycle", "manual-page"]
+  },
+  {
+    "id": "duty-missing-process",
+    "prompt": "What is the duty cycle at 200A on 240V?",
+    "mode": "clarification",
+    "answerIncludes": ["process"],
+    "artifactTypes": ["duty-cycle"]
+  },
+  {
+    "id": "duty-no-interpolation",
+    "prompt": "What is the MIG duty cycle at 150A on 240V?",
+    "mode": "answer",
+    "answerIncludes": ["does not publish", "will not interpolate", "200 A: 25%"],
+    "artifactTypes": ["duty-cycle"]
+  },
+  {
+    "id": "tig-polarity",
+    "prompt": "What polarity setup do I need for TIG welding? Which socket does the ground clamp go in?",
+    "mode": "answer",
+    "answerIncludes": ["DCEN", "negative (-) socket", "positive (+) socket"],
+    "citationPages": [24],
+    "artifactTypes": ["polarity-diagram", "manual-page"]
+  },
+  {
+    "id": "flux-polarity",
+    "prompt": "For self-shielded flux-cored, show the cable connections and polarity.",
+    "mode": "answer",
+    "answerIncludes": ["DCEN", "negative (-) socket", "positive (+) socket", "No external shielding gas"],
+    "citationPages": [13],
+    "artifactTypes": ["polarity-diagram", "manual-page"]
+  },
+  {
+    "id": "mig-polarity",
+    "prompt": "Which socket gets the MIG wire-feed cable and which gets the ground clamp?",
+    "mode": "answer",
+    "answerIncludes": ["DCEP", "positive (+) socket", "negative (-) socket"],
+    "citationPages": [14],
+    "artifactTypes": ["polarity-diagram", "manual-page"]
+  },
+  {
+    "id": "porosity-flux",
+    "prompt": "I'm getting porosity in my self-shielded flux-cored welds. What should I check?",
+    "mode": "answer",
+    "answerIncludes": ["dirty workpiece or wire", "polarity", "Safety"],
+    "answerExcludes": ["shielding gas flow"],
+    "citationPages": [37, 43],
+    "artifactTypes": ["troubleshooter", "manual-page"]
+  },
+  {
+    "id": "bird-nest",
+    "prompt": "The MIG wire is bird-nesting near the drive rollers. Help me troubleshoot it.",
+    "mode": "answer",
+    "answerIncludes": ["wire-feed pressure"],
+    "citationPages": [42],
+    "artifactTypes": ["troubleshooter", "manual-page"]
+  },
+  {
+    "id": "front-panel-visual",
+    "prompt": "Show me the front panel controls.",
+    "mode": "answer",
+    "citationPages": [8],
+    "artifactTypes": ["manual-page"]
+  },
+  {
+    "id": "wiring-visual",
+    "prompt": "Where is the internal wiring schematic?",
+    "mode": "answer",
+    "citationPages": [45],
+    "artifactTypes": ["manual-page"]
+  },
+  {
+    "id": "process-choice",
+    "prompt": "Which process should I use for 1/8-inch steel outdoors?",
+    "mode": "answer",
+    "answerIncludes": ["Flux-Cored", "Stick"],
+    "citationPages": [1, 7],
+    "artifactTypes": ["process-guide", "manual-page"]
+  },
+  {
+    "id": "tig-aluminum-limit",
+    "prompt": "Can this machine TIG-weld aluminum?",
+    "mode": "answer",
+    "answerIncludes": ["DC TIG", "does not provide the AC TIG"],
+    "citationPages": [1, 7],
+    "artifactTypes": ["process-guide", "manual-page"]
+  },
+  {
+    "id": "unknown-question",
+    "prompt": "What is the exact torque specification for an internal transformer bolt?",
+    "mode": "clarification",
+    "answerIncludes": ["could not tie"],
+    "artifactTypes": []
+  }
+]
