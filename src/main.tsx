@@ -2,7 +2,7 @@ import React, { useId, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowUp, BookOpen, Check, ChevronRight, Gauge, GitCompareArrows,
-  Image, Plus, Settings2, ShieldAlert, ShieldCheck, Sparkles, Wrench, X, Zap
+  Image, ImagePlus, Plus, Settings2, ShieldAlert, ShieldCheck, Sparkles, Wrench, X, Zap
 } from "lucide-react";
 import type {
   AgentResponse, Artifact, ChatMessage, Citation, CoreAgentResponse, DocumentId, WeldingProcess
@@ -279,19 +279,75 @@ function App() {
   const [loading,setLoading] = useState(false);
   const [active,setActive] = useState<CoreAgentResponse|null>(null);
   const [mode,setMode] = useState<AgentResponse["mode"]|null>(null);
+  const [attachment,setAttachment] = useState<{file:File;url:string}|null>(null);
+  const [attachmentError,setAttachmentError] = useState("");
+  const fileInput = useRef<HTMLInputElement>(null);
   const conversationId = useRef<string>(crypto.randomUUID());
+
+  function chooseImage(file:File|undefined) {
+    setAttachmentError("");
+    if (!file) return;
+    if (!["image/jpeg","image/png","image/webp"].includes(file.type)) {
+      setAttachmentError("Use a JPEG, PNG, or WebP image.");
+      return;
+    }
+    if (file.size > 5*1024*1024) {
+      setAttachmentError("Image must be 5 MB or smaller.");
+      return;
+    }
+    setAttachment(current => {
+      if (current) URL.revokeObjectURL(current.url);
+      return {file,url:URL.createObjectURL(file)};
+    });
+  }
+
+  function removeImage() {
+    setAttachment(current => {
+      if (current) URL.revokeObjectURL(current.url);
+      return null;
+    });
+    if (fileInput.current) fileInput.current.value="";
+  }
+
+  function readDataUrl(file:File) {
+    return new Promise<string>((resolve,reject) => {
+      const reader=new FileReader();
+      reader.onload=()=>typeof reader.result==="string"
+        ? resolve(reader.result)
+        : reject(new Error("Could not read the image."));
+      reader.onerror=()=>reject(new Error("Could not read the image."));
+      reader.readAsDataURL(file);
+    });
+  }
 
   async function send(raw=input) {
     const prompt=raw.trim();
-    if (!prompt || loading) return;
-    const user:ChatMessage={role:"user",content:prompt};
+    if ((!prompt && !attachment) || loading) return;
+    const activeAttachment=attachment;
+    const user:ChatMessage={
+      role:"user",
+      content:prompt || "Inspect this weld photo.",
+      imageUrl:activeAttachment?.url,
+      imageName:activeAttachment?.file.name
+    };
     const next=[...messages,user];
-    setMessages(next); setInput(""); setLoading(true);
+    setMessages(next); setInput(""); setAttachment(null); setAttachmentError(""); setLoading(true);
+    if (fileInput.current) fileInput.current.value="";
     try {
+      const image=activeAttachment ? {
+        dataUrl:await readDataUrl(activeAttachment.file),
+        mediaType:activeAttachment.file.type,
+        name:activeAttachment.file.name
+      } : undefined;
       const response=await fetch("/api/chat",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({message:prompt,history:next.slice(-12),conversationId:conversationId.current})
+        body:JSON.stringify({
+          message:prompt,
+          history:next.slice(-12),
+          conversationId:conversationId.current,
+          image
+        })
       });
       const data=await response.json() as AgentResponse|{error:string};
       if (!response.ok || "error" in data) throw new Error("error" in data ? data.error : "Request failed");
@@ -326,7 +382,8 @@ function App() {
   async function resetConversation() {
     const oldId=conversationId.current;
     conversationId.current=crypto.randomUUID();
-    setMessages([welcome]); setActive(null); setMode(null); setInput("");
+    removeImage();
+    setMessages([welcome]); setActive(null); setMode(null); setInput(""); setAttachmentError("");
     await fetch(`/api/conversations/${oldId}`,{method:"DELETE"}).catch(()=>undefined);
   }
 
@@ -343,6 +400,10 @@ function App() {
       <div className="messages">
         {messages.map((message,index)=><div className={`message ${message.role}`} key={index}>
           <label>{message.role==="assistant"?"ARCSMITH":"YOU"}</label>
+          {message.role==="user" && message.imageUrl && <figure className="user-image">
+            <img src={message.imageUrl} alt={message.imageName || "Attached weld"}/>
+            <figcaption>{message.imageName}</figcaption>
+          </figure>}
           <p>{message.content}</p>
           {message.role==="assistant" && (message.citations?.length??0)>0 && <div className="citations">
             {message.citations?.map(source=><button key={`${source.document}-${source.page}`} onClick={()=>showCitation(source,message)}><BookOpen size={13}/>{source.title}, p. {source.page}</button>)}
@@ -353,7 +414,18 @@ function App() {
       </div>
       <div className="composer">
         <div className="suggestions">{messages.length<3 && starters.slice(0,3).map(item=><button onClick={()=>send(item.prompt)} key={item.label}>{item.label}</button>)}</div>
-        <div className="input"><textarea aria-label="Ask Arcsmith" value={input} onChange={event=>setInput(event.target.value)} onKeyDown={event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();send();}}} placeholder="Ask about setup, settings, faults, or weld quality…" rows={1}/><button aria-label="Send" onClick={()=>send()} disabled={!input.trim()||loading}><ArrowUp size={20}/></button></div>
+        {attachment && <div className="attachment-preview">
+          <img src={attachment.url} alt="Selected weld"/>
+          <div><b>{attachment.file.name}</b><span>{(attachment.file.size/1024/1024).toFixed(1)} MB · ready to inspect</span></div>
+          <button aria-label="Remove attached image" onClick={removeImage}><X size={16}/></button>
+        </div>}
+        {attachmentError && <div className="attachment-error" role="alert">{attachmentError}</div>}
+        <div className="input">
+          <input ref={fileInput} className="file-input" type="file" accept="image/jpeg,image/png,image/webp" onChange={event=>chooseImage(event.target.files?.[0])}/>
+          <button className="attach" aria-label="Attach weld image" title="Attach weld image" onClick={()=>fileInput.current?.click()} disabled={loading}><ImagePlus size={20}/></button>
+          <textarea aria-label="Ask Arcsmith" value={input} onChange={event=>setInput(event.target.value)} onKeyDown={event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();send();}}} placeholder={attachment ? "Describe the weld, process, or symptom…" : "Ask about setup, settings, faults, or weld quality…"} rows={1}/>
+          <button className="send" aria-label="Send" onClick={()=>send()} disabled={(!input.trim()&&!attachment)||loading}><ArrowUp size={20}/></button>
+        </div>
         <small>Disconnect power before changing connections or servicing the machine.</small>
       </div>
     </section>
