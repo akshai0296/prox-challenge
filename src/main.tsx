@@ -1,11 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useId, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowUp, BookOpen, Check, ChevronRight, Gauge, GitCompareArrows,
-  Image, Plus, ShieldAlert, ShieldCheck, Sparkles, Wrench, X, Zap
+  Image, Plus, Settings2, ShieldAlert, ShieldCheck, Sparkles, Wrench, X, Zap
 } from "lucide-react";
 import type {
-  AgentResponse, Artifact, ChatMessage, Citation, CoreAgentResponse, DocumentId
+  AgentResponse, Artifact, ChatMessage, Citation, CoreAgentResponse, DocumentId, WeldingProcess
 } from "./types";
 import "./styles.css";
 
@@ -21,10 +21,47 @@ const welcome: ChatMessage = {
   content:"I’m your OmniPro 220 shop copilot. Ask me to configure a process, diagnose a weld, compare methods, or check an exact duty-cycle rating. I’ll ground the answer in the supplied product documents and show the relevant setup."
 };
 
+const configuratorProfiles: Record<WeldingProcess, {
+  materials: string[];
+  consumables: string[];
+  gases: string[];
+  outputs: string[];
+  sourcePage: number;
+}> = {
+  MIG: {
+    materials:["Mild steel","Stainless steel","Aluminum with optional spool gun"],
+    consumables:["0.025 in solid wire","0.030 in solid wire","0.035 in solid wire","Aluminum wire with optional spool gun"],
+    gases:["75% argon / 25% CO2","100% CO2"],
+    outputs:["Wire-feed speed (amperage)","Voltage"],
+    sourcePage:20
+  },
+  "Flux-core": {
+    materials:["Mild steel","Stainless steel"],
+    consumables:["0.030 in flux-cored wire","0.035 in flux-cored wire","0.045 in flux-cored wire"],
+    gases:[],
+    outputs:["Wire-feed speed (amperage)","Voltage"],
+    sourcePage:20
+  },
+  TIG: {
+    materials:["Mild steel","Stainless steel","Chrome moly"],
+    consumables:["TIG rod diameter from the machine screen"],
+    gases:["100% argon"],
+    outputs:["Output amperage","Screen-confirmed polarity and gas"],
+    sourcePage:30
+  },
+  Stick: {
+    materials:["Mild steel","Stainless steel"],
+    consumables:["Electrode classification and diameter from its package"],
+    gases:[],
+    outputs:["Output amperage","Screen-confirmed polarity","Hot Start and Arc Force"],
+    sourcePage:32
+  }
+};
+
 function imagePath(document: DocumentId, page: number) {
   if (document === "owner-manual") return `/manual/page-${page}.jpg`;
   if (document === "quick-start") return `/quick-start/page-${page}.jpg`;
-  return "/reference/selection-chart.jpg";
+  return "/reference/selection-chart.png";
 }
 
 function documentLabel(document: DocumentId) {
@@ -65,10 +102,30 @@ function terminalSymbol(terminal:string) {
 }
 
 function Connection({artifact}:{artifact:Extract<Artifact,{type:"connection"}>}) {
+  const outputConnections = artifact.connections.filter(
+    item => item.terminal === "positive" || item.terminal === "negative"
+  );
+  const auxiliaryConnections = artifact.connections.filter(
+    item => item.terminal !== "positive" && item.terminal !== "negative"
+  );
   return <div className="artifact connection">
     <div className="artifact-head"><Zap size={18}/><span>{artifact.title}</span></div>
+    <div className="socket-schematic">
+      <div className="machine-screen">OMNIPRO 220 OUTPUT PANEL</div>
+      <div className="socket-bank" aria-label="Physical output socket layout">
+        <div><b className="socket negative">−</b><span>NEGATIVE</span></div>
+        <div><b className="socket positive">+</b><span>POSITIVE</span></div>
+      </div>
+      <div className="cable-links">
+        {outputConnections.length ? outputConnections.map(item =>
+          <div className={`cable-link ${item.terminal}`} key={`map-${item.label}`}>
+            <strong>{item.label}</strong><i/><b>{item.terminal === "positive" ? "+" : "−"}</b>
+          </div>
+        ) : <div className="screen-routing"><b>LCD</b><span>The electrode selection determines both output sockets.</span></div>}
+      </div>
+    </div>
     <div className="connection-list">
-      {artifact.connections.map(item =>
+      {auxiliaryConnections.map(item =>
         <div className="connection-row" key={`${item.label}-${item.terminal}`}>
           <b className={`terminal ${item.terminal}`}>{terminalSymbol(item.terminal)}</b>
           <div><strong>{item.label}</strong><span>{item.note}</span></div>
@@ -76,6 +133,80 @@ function Connection({artifact}:{artifact:Extract<Artifact,{type:"connection"}>})
       )}
     </div>
     <p className="warning"><ShieldAlert size={15}/>{artifact.warning}</p>
+  </div>;
+}
+
+function SettingsConfigurator({
+  artifact,onSelect
+}:{
+  artifact:Extract<Artifact,{type:"settings-configurator"}>;
+  onSelect:(value:string)=>void;
+}) {
+  const [process,setProcess] = useState<WeldingProcess|"" >(artifact.process ?? "");
+  const [voltage,setVoltage] = useState<120|240|"" >(artifact.voltage ?? "");
+  const [material,setMaterial] = useState(artifact.material);
+  const [thickness,setThickness] = useState(artifact.thickness);
+  const [consumable,setConsumable] = useState(artifact.consumable);
+  const [gas,setGas] = useState(artifact.gas);
+  const consumableListId = useId();
+  const gasListId = useId();
+  const profile = process ? configuratorProfiles[process] : null;
+  const complete = Boolean(
+    process &&
+    voltage &&
+    material.trim() &&
+    thickness.trim() &&
+    consumable.trim() &&
+    (!profile?.gases.length || gas.trim())
+  );
+
+  function chooseProcess(value: WeldingProcess|"") {
+    setProcess(value);
+    setMaterial("");
+    setConsumable("");
+    setGas("");
+  }
+
+  function applyConfiguration() {
+    if (!complete || !process || !voltage) return;
+    onSelect(
+      `Configure ${process} on ${voltage} V for ${material}, ${thickness}, using ${consumable}${gas ? ` with ${gas} shielding gas` : ""}. Use the OmniPro Auto Weld workflow and do not invent unpublished numeric settings.`
+    );
+  }
+
+  return <div className="artifact settings-configurator">
+    <div className="artifact-head"><Settings2 size={18}/><span>Auto Weld configurator</span></div>
+    <div className="config-grid">
+      <label><span>PROCESS</span><select value={process} onChange={event=>chooseProcess(event.target.value as WeldingProcess|"")}>
+        <option value="">Select process</option>
+        {(["MIG","Flux-core","TIG","Stick"] as WeldingProcess[]).map(value=><option value={value} key={value}>{value}</option>)}
+      </select></label>
+      <label><span>INPUT</span><select value={voltage} onChange={event=>setVoltage(event.target.value ? Number(event.target.value) as 120|240 : "")}>
+        <option value="">Select voltage</option><option value="120">120 V</option><option value="240">240 V</option>
+      </select></label>
+      <label><span>MATERIAL</span><select value={material} disabled={!profile} onChange={event=>setMaterial(event.target.value)}>
+        <option value="">Select material</option>
+        {profile?.materials.map(value=><option value={value} key={value}>{value}</option>)}
+      </select></label>
+      <label><span>THICKNESS</span><input value={thickness} onChange={event=>setThickness(event.target.value)} placeholder='Example: 1/8 in'/></label>
+      <label className="config-wide"><span>CONSUMABLE</span>
+        <input list={consumableListId} value={consumable} disabled={!profile} onChange={event=>setConsumable(event.target.value)} placeholder="Wire, rod, or electrode"/>
+        <datalist id={consumableListId}>{profile?.consumables.map(value=><option value={value} key={value}/>)}</datalist>
+      </label>
+      {profile?.gases.length ? <label className="config-wide"><span>SHIELDING GAS</span>
+        <input list={gasListId} value={gas} onChange={event=>setGas(event.target.value)} placeholder="Select or enter shielding gas"/>
+        <datalist id={gasListId}>{profile.gases.map(value=><option value={value} key={value}/>)}</datalist>
+      </label> : null}
+    </div>
+    <div className="machine-output">
+      <span>MACHINE-GENERATED OUTPUT</span>
+      {profile
+        ? <ul>{profile.outputs.map(output=><li key={output}>{output}</li>)}</ul>
+        : <p>Select a process to reveal the OmniPro controls.</p>}
+    </div>
+    <button className="apply-config" disabled={!complete} onClick={applyConfiguration}>Apply setup in chat<ChevronRight size={15}/></button>
+    <p className="warning"><ShieldAlert size={15}/>{artifact.warning}</p>
+    <small>Source: owner’s manual, p. {profile?.sourcePage ?? artifact.sourcePage}. The machine screen remains authoritative.</small>
   </div>;
 }
 
@@ -123,6 +254,7 @@ function ArtifactView({artifact,onSelect}:{artifact:Artifact;onSelect:(value:str
   if (artifact.type==="connection") return <Connection artifact={artifact}/>;
   if (artifact.type==="checklist") return <Checklist artifact={artifact}/>;
   if (artifact.type==="process-guide") return <ProcessGuide artifact={artifact}/>;
+  if (artifact.type==="settings-configurator") return <SettingsConfigurator artifact={artifact} onSelect={onSelect}/>;
   if (artifact.type==="clarification") return <div className="artifact clarification">
     <div className="artifact-head"><Sparkles size={18}/><span>One detail needed</span></div>
     <p>{artifact.question}</p>

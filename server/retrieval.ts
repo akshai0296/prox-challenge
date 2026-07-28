@@ -64,7 +64,7 @@ for (const unique of documentTokens.map(list => new Set(list))) {
 function visualPath(document: DocumentId, page: number): string {
   if (document === "owner-manual") return `/manual/page-${page}.jpg`;
   if (document === "quick-start") return `/quick-start/page-${page}.jpg`;
-  return "/reference/selection-chart.jpg";
+  return "/reference/selection-chart.png";
 }
 
 function excerptFor(text: string, terms: string[]): string {

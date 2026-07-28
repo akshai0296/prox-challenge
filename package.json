@@ -8,7 +8,9 @@
     "build": "vite build",
     "start": "node --import tsx server/index.ts",
     "test": "node --import tsx --test tests/*.test.ts",
+    "test:live": "RUN_LIVE_AGENT_TESTS=1 node --import tsx --test tests/live-agent.test.ts",
     "knowledge:build": "node scripts/build-knowledge.mjs",
+    "assets:build": "node scripts/build-assets.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

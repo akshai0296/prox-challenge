@@ -60,6 +60,20 @@ const ProcessGuideArtifactSchema = z.object({
   source: z.string().min(1).max(180)
 }).strict();
 
+const SettingsConfiguratorArtifactSchema = z.object({
+  type: z.literal("settings-configurator"),
+  process: process.nullable(),
+  voltage: z.union([z.literal(120), z.literal(240)]).nullable(),
+  material: z.string().max(100),
+  thickness: z.string().max(60),
+  consumable: z.string().max(120),
+  gas: z.string().max(120),
+  requiredInputs: z.array(z.string().min(1).max(100)).min(1).max(8),
+  machineOutputs: z.array(z.string().min(1).max(140)).min(1).max(6),
+  sourcePage: z.number().int().positive(),
+  warning: z.string().min(1).max(320)
+}).strict();
+
 const ClarificationArtifactSchema = z.object({
   type: z.literal("clarification"),
   question: z.string().min(1).max(220),
@@ -72,6 +86,7 @@ export const ArtifactSchema = z.discriminatedUnion("type", [
   ConnectionArtifactSchema,
   ChecklistArtifactSchema,
   ProcessGuideArtifactSchema,
+  SettingsConfiguratorArtifactSchema,
   ClarificationArtifactSchema
 ]);
 
@@ -143,6 +158,23 @@ export const responseJsonSchema = {
             type:"object", additionalProperties:false,
             properties:{type:{const:"process-guide"},recommended:{enum:["MIG","Flux-core","TIG","Stick"]},reasons:{type:"array",items:{type:"string"}},alternatives:{type:"array",items:{type:"string"}},source:{type:"string"}},
             required:["type","recommended","reasons","alternatives","source"]
+          },
+          {
+            type:"object", additionalProperties:false,
+            properties:{
+              type:{const:"settings-configurator"},
+              process:{anyOf:[{enum:["MIG","Flux-core","TIG","Stick"]},{type:"null"}]},
+              voltage:{anyOf:[{enum:[120,240]},{type:"null"}]},
+              material:{type:"string"},
+              thickness:{type:"string"},
+              consumable:{type:"string"},
+              gas:{type:"string"},
+              requiredInputs:{type:"array",items:{type:"string"},minItems:1,maxItems:8},
+              machineOutputs:{type:"array",items:{type:"string"},minItems:1,maxItems:6},
+              sourcePage:{type:"integer",minimum:1},
+              warning:{type:"string"}
+            },
+            required:["type","process","voltage","material","thickness","consumable","gas","requiredInputs","machineOutputs","sourcePage","warning"]
           },
           {
             type:"object", additionalProperties:false,

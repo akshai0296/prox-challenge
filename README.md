@@ -4,6 +4,12 @@ Arcsmith is a multimodal technical copilot for the Vulcan OmniPro 220. It search
 
 This is not a generic PDF chatbot. Technical answers are grounded in a complete local corpus and verified structured records. Claude decides which evidence and tool it needs, but it cannot invent a duty-cycle interpolation or silently switch between MIG, flux-core, TIG, and Stick.
 
+## Live demo
+
+The [hosted Arcsmith showcase](https://arcsmith-omnipro.akshai02.chatgpt.site) runs the same grounded local reasoner and interactive artifact UI without requiring an API key. The repository version adds the resumable Claude Agent SDK path when `ANTHROPIC_API_KEY` is present.
+
+[![Arcsmith interface preview](public/arcsmith-preview.svg)](https://arcsmith-omnipro.akshai02.chatgpt.site)
+
 ## Run in under two minutes
 
 Requires Node.js 20 or newer.
@@ -23,6 +29,7 @@ When `ANTHROPIC_API_KEY` is present, Arcsmith uses the Claude Agent SDK with cus
 npm test
 npm run typecheck
 npm run build
+npm run test:live # requires ANTHROPIC_API_KEY
 ```
 
 ## High-value questions
@@ -46,7 +53,8 @@ flowchart LR
     S --> T["Product MCP tools"]
     T --> K["51-page search index"]
     T --> F["Verified facts"]
-    S --> V["Validated artifacts"]
+    S --> L["Per-request evidence ledger"]
+    L --> V["Canonical answer + validated artifacts"]
     V --> UI
     API --> O["Grounded offline reasoner"]
     O --> V
@@ -54,7 +62,7 @@ flowchart LR
 
 ### Claude Agent SDK
 
-The live agent has six custom in-process MCP tools:
+The live agent has seven custom in-process MCP tools:
 
 1. `search_manual` searches every supplied source page and returns page-numbered excerpts and image paths.
 2. `read_manual_page` reads a complete page after retrieval.
@@ -62,8 +70,11 @@ The live agent has six custom in-process MCP tools:
 4. `lookup_connections` returns verified polarity, cable, gas, and safety information by process.
 5. `lookup_diagnostic` separates MIG, flux-core, and wire-feed troubleshooting.
 6. `compare_processes` exposes the facts in the visual process-selection chart.
+7. `lookup_settings_workflow` returns the supported Auto Weld inputs and outputs without fabricating unpublished settings.
 
-The agent has no shell, filesystem mutation, web, or arbitrary code tools. Sessions are resumed by conversation ID so follow-ups such as “What about 120 V?” retain their context.
+The SDK is configured with `tools: []`, so Claude Code's built-in shell, filesystem, web, and code tools are absent from the context. `allowedTools` contains only the seven product tools. Sessions are resumed by conversation ID so follow-ups such as “What about 120 V?” retain their context.
+
+Every technical turn must call `search_manual` plus a relevant structured tool. A per-request evidence ledger records the exact tool payloads, citations, and verified artifacts. The server rejects ungrounded numbers and critical polarity or flow terms, drops pages that were not returned by a tool, replaces model-authored artifact data, and reconstructs the final product prose from verified evidence. Claude chooses the evidence path, but it does not get the last word on product facts.
 
 ### Knowledge extraction
 
@@ -81,6 +92,14 @@ The generated corpus is committed, so evaluators do not need Poppler or OCR at r
 npm run knowledge:build
 ```
 
+The full-width visual selection chart can be regenerated from its source PDF with:
+
+```bash
+npm run assets:build
+```
+
+Asset tests verify JPEG end markers and the selection chart's PNG dimensions, aspect ratio, and final `IEND` chunk. This prevents a partial or truncated visual from being committed unnoticed.
+
 ### Verified fact layer
 
 Duty ratings, current ranges, polarity, connection layouts, wire-feed settings, troubleshooting branches, and process-selection constraints live in `server/product-data.ts`.
@@ -94,9 +113,10 @@ Claude returns a strict JSON-schema response. The server validates it with Zod a
 Supported artifacts:
 
 - Exact duty-cycle control
-- Process-specific connection map
+- Physical positive and negative socket schematic with process-specific cable routing
 - Interactive diagnostic checklist
 - Process recommendation card
+- Interactive Auto Weld settings configurator
 - Clarification choices
 - Clickable manual, quick-start, or selection-chart page
 
@@ -116,6 +136,11 @@ The frontend renders trusted React components. It never executes model-generated
 
 The automated suite covers:
 
+- Rendered visual integrity, including the full selection chart
+- Removal of every built-in Claude Code tool
+- Required manual search and product-tool use
+- Citation filtering and deterministic grounded prose
+- Replacement of model-authored connection, diagnostic, and clarification data
 - All manufacturer-rated duty-cycle combinations
 - Separation of process, voltage, and amperage
 - Refusal to interpolate unlisted ratings
@@ -133,6 +158,14 @@ Run:
 npm test
 ```
 
+The current suite has 36 cases: 35 pass locally and the live Claude integration case is skipped unless explicitly enabled. The live test checks the real SDK path, tool calls, structured response, exact 200 A / 240 V duty-cycle answer, citation, and artifact:
+
+```bash
+ANTHROPIC_API_KEY=... npm run test:live
+```
+
+The command fails immediately if the key is missing, so a skipped live validation cannot be mistaken for a successful one.
+
 ## Deployment
 
 ```bash
@@ -142,16 +175,20 @@ docker run --rm -p 8787:8787 --env-file .env arcsmith
 
 The container serves the production frontend and API from port 8787. `.dockerignore` excludes API keys, local dependencies, Git metadata, and source PDFs from the image context.
 
+`.github/workflows/ci.yml` runs a clean install, all offline tests, TypeScript checks, the production frontend build, and a separate Docker image build on every pull request and every push to `main`.
+
 ## Repository map
 
 ```text
 knowledge/
   manual-pages.json       pre-extracted searchable corpus
 scripts/
+  build-assets.mjs        deterministic visual rendering and chart repair
   build-knowledge.mjs     deterministic extraction script
 server/
   agent.ts                Claude Agent SDK and custom MCP tools
   contract.ts             JSON-schema and Zod response validation
+  grounding.ts            evidence ledger and canonical response enforcement
   offline-agent.ts        process-aware grounded fallback
   product-data.ts         verified technical records
   retrieval.ts            local ranked retrieval
@@ -161,6 +198,9 @@ src/
   styles.css              responsive product interface
   types.ts                shared response contract
 tests/
+  assets.test.ts          image completeness and chart regression checks
+  grounding.test.ts       tool isolation and evidence enforcement
+  live-agent.test.ts      opt-in real Claude SDK integration test
   offline-agent.test.ts   technical and adversarial cases
   retrieval.test.ts       corpus and visual retrieval cases
 public/
@@ -175,6 +215,7 @@ files/                    original challenge documents
 - Exact wire speed and voltage pairs are not published in the supplied documents. Arcsmith guides users through the machine’s Auto Weld inputs rather than fabricating numbers.
 - Photo-based weld diagnosis and voice are not included.
 - The selection chart is a general process guide, not a substitute for the OmniPro’s material-specific on-screen setup.
+- The live Claude test requires an Anthropic API key and is intentionally not represented as passing when no key is available.
 
 ## Product source
 

@@ -121,6 +121,23 @@ test("requires missing setup dimensions instead of guessing settings", () => {
   const response = runOfflineAgent("What settings should I use?");
   assert.equal(response.needsClarification,true);
   assert.match(response.answer,/process, input voltage, material, thickness/i);
+  assert.deepEqual(response.citations.map(item => item.page),[20,30,32]);
+  assert.ok(response.artifacts.some(artifact => artifact.type === "settings-configurator"));
+});
+
+test("returns a grounded interactive settings workflow when setup inputs are complete", () => {
+  const response = runOfflineAgent(
+    "What settings should I use for MIG on 240 V with 1/8 inch mild steel, 0.030 solid wire, and C25 gas?"
+  );
+  assert.equal(response.needsClarification,false);
+  const configurator = response.artifacts.find(artifact => artifact.type === "settings-configurator");
+  assert.equal(configurator?.type,"settings-configurator");
+  assert.equal(configurator.process,"MIG");
+  assert.equal(configurator.voltage,240);
+  assert.equal(configurator.gas,"75% argon / 25% CO2");
+  assert.equal(configurator.sourcePage,20);
+  assert.ok(configurator.machineOutputs.some(output => /wire-feed speed/i.test(output)));
+  assert.doesNotMatch(response.answer,/set (?:the )?voltage to \d/i);
 });
 
 test("uses the visual selection chart for process recommendations", () => {
@@ -149,6 +166,21 @@ test("does not guess Stick polarity without an electrode classification", () => 
   assert.equal(response.needsClarification,true);
   assert.match(response.answer,/depends on the electrode/i);
   assert.match(response.followUp,/electrode classification/i);
+  assert.deepEqual(response.citations.map(item => item.page),[27,32]);
+  const connection = response.artifacts.find(artifact => artifact.type === "connection");
+  assert.equal(connection?.type,"connection");
+  assert.equal(connection.connections.find(item => /electrode holder/i.test(item.label))?.terminal,"positive");
+  assert.equal(connection.connections.find(item => /ground clamp/i.test(item.label))?.terminal,"negative");
+  assert.ok(connection.connections.some(item => item.terminal === "screen"));
+});
+
+test("uses the physical TIG cable diagram and the operating-screen page", () => {
+  const response = runOfflineAgent("Which socket should I use for the TIG torch and ground clamp?");
+  assert.deepEqual(response.citations.map(item => item.page),[24,30]);
+  const connection = response.artifacts.find(artifact => artifact.type === "connection");
+  assert.equal(connection?.type,"connection");
+  assert.equal(connection.connections.find(item => /tig torch/i.test(item.label))?.terminal,"negative");
+  assert.equal(connection.connections.find(item => /ground clamp/i.test(item.label))?.terminal,"positive");
 });
 
 test("asks for a process when a connection request is ambiguous", () => {

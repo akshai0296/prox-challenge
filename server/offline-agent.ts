@@ -1,4 +1,5 @@
 import type { Artifact, Citation, CoreAgentResponse, WeldingProcess } from "../src/types.js";
+import { verifiedSettingsArtifact } from "./grounding.js";
 import { connections, diagnostics, dutyRecords, normalizeProcess, processGuide } from "./product-data.js";
 import { searchManual } from "./retrieval.js";
 
@@ -50,6 +51,36 @@ function detectVoltage(text: string): 120 | 240 | undefined {
 function detectAmps(text: string): number | undefined {
   const match = text.match(/\b(\d{2,3})\s*(?:a|amps?|amperes?)\b/i);
   return match ? Number(match[1]) : undefined;
+}
+
+function detectMaterial(text: string): string {
+  if (/\bchrome.?moly\b/i.test(text)) return "Chrome moly";
+  if (/\bstainless\b/i.test(text)) return "Stainless steel";
+  if (/\baluminum\b/i.test(text)) return "Aluminum";
+  if (/\bcast(?:ing| iron)?\b/i.test(text)) return "Casting";
+  if (/\b(?:mild )?steel\b/i.test(text)) return "Mild steel";
+  return "";
+}
+
+function detectThickness(text: string): string {
+  const match = text.match(/\b(?:\d+\s*(?:ga|gauge)|\d+(?:\/\d+)?\s*(?:in|inch(?:es)?|"))\b/i);
+  return match?.[0] ?? "";
+}
+
+function detectConsumable(text: string): string {
+  const wire = text.match(/\b0?\.\d{3}\s*(?:"|in)?\s*(?:solid|flux(?:-cored)?)?\s*wire\b/i);
+  if (wire) return wire[0];
+  const electrode = text.match(/\b(?:E\d{4}|electrode\s+(?:type|classification)\s+\S+)\b/i);
+  return electrode?.[0] ?? "";
+}
+
+function detectGas(text: string): string {
+  if (/\b(?:c25|75\s*%?\s*argon\s*[/+]\s*25\s*%?\s*(?:co2|carbon dioxide))\b/i.test(text)) {
+    return "75% argon / 25% CO2";
+  }
+  if (/\b100\s*%?\s*argon\b/i.test(text)) return "100% argon";
+  if (/\b100\s*%?\s*(?:co2|carbon dioxide)\b/i.test(text)) return "100% CO2";
+  return "";
 }
 
 function displayProcess(process: WeldingProcess) {
@@ -121,10 +152,14 @@ function connectionAnswer(process: WeldingProcess | undefined): CoreAgentRespons
   const setup = connections[process];
   return {
     answer:`${setup.summary} ${setup.connections.map(item => `${item.label}: ${item.terminal}.`).join(" ")} ${setup.warning}`,
-    citations:[citation(setup.page,`${process} connection setup`)],
+    citations:[
+      citation(setup.page,`${process} physical cable setup`),
+      ...setup.supportingPages.map(page => citation(page,`${process} operating-screen setup`))
+    ],
     artifacts:[
       { type:"connection", title:`${process} connection map`, process, connections:setup.connections, warning:setup.warning },
-      manualPage(setup.page,`${process} cable and polarity setup`)
+      manualPage(setup.page,`${process} physical cable layout`),
+      ...setup.supportingPages.map(page => manualPage(page,`${process} operating-screen setup`))
     ],
     needsClarification:process === "Stick",
     followUp:process === "Stick" ? "What electrode classification are you using?" : "Do you want the operating sequence after the cables are connected?"
@@ -231,25 +266,54 @@ function settingsAnswer(
   voltage: 120 | 240 | undefined,
   text: string
 ): CoreAgentResponse {
-  const materialKnown = /\b(steel|stainless|aluminum|chrome.?moly|cast iron|casting)\b/i.test(text);
-  const thicknessKnown = /\b(\d+\s*(?:ga|gauge)|\d+(?:\/\d+)?\s*(?:in|inch|"))\b/i.test(text);
+  const material = detectMaterial(text);
+  const thickness = detectThickness(text);
+  const consumable = detectConsumable(text);
+  const gas = detectGas(text);
+  const configurator = verifiedSettingsArtifact({
+    process:process ?? null,
+    voltage:voltage ?? null,
+    material,
+    thickness,
+    consumable,
+    gas
+  });
   const missing = [
     !process && "process",
     !voltage && "input voltage",
-    !materialKnown && "material",
-    !thicknessKnown && "thickness"
+    !material && "material",
+    !thickness && "thickness",
+    !consumable && "consumable",
+    (process === "MIG" || process === "TIG") && !gas && "shielding gas"
   ].filter(Boolean);
   if (missing.length) {
-    return clarification(
-      `I need the ${missing.join(", ")} before giving setup guidance. The OmniPro's Auto Weld screen calculates output only after those inputs and the consumable are selected.`,
-      ["MIG setup", "Flux-core setup", "TIG setup", "Stick setup"]
-    );
+    const question = `Set the missing ${missing.join(", ")} in the configurator. The OmniPro's Auto Weld screen calculates or marks its recommendation only after the required inputs and consumable are selected.`;
+    return {
+      answer:question,
+      citations:process
+        ? [citation(configurator.sourcePage,`${process} Auto Weld settings`)]
+        : [
+            citation(20,"Wire Auto Weld settings"),
+            citation(30,"TIG Auto Weld settings"),
+            citation(32,"Stick Auto Weld settings")
+          ],
+      artifacts:[
+        configurator,
+        {
+          type:"clarification",
+          question,
+          options:["MIG setup","Flux-core setup","TIG setup","Stick setup"]
+        }
+      ],
+      needsClarification:true,
+      followUp:question
+    };
   }
-  const page = process === "MIG" || process === "Flux-core" ? 20 : process === "TIG" ? 30 : 31;
+  const page = configurator.sourcePage;
   return {
     answer:`For ${process} on ${voltage} V, use the OmniPro Auto Weld workflow: select the process, consumable diameter, material thickness, gas or electrode as applicable, then review the machine-generated output before welding scrap. The supplied manual does not publish enough numeric values to safely invent a wire-speed or voltage pair.`,
     citations:[citation(page,`${process} Auto Weld settings`)],
-    artifacts:[manualPage(page,`${process} Auto Weld control sequence`)],
+    artifacts:[configurator,manualPage(page,`${process} Auto Weld control sequence`)],
     needsClarification:false,
     followUp:"What consumable diameter and gas or electrode classification are you using?"
   };

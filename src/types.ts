@@ -53,6 +53,19 @@ export type Artifact =
       source: string;
     }
   | {
+      type: "settings-configurator";
+      process: WeldingProcess | null;
+      voltage: 120 | 240 | null;
+      material: string;
+      thickness: string;
+      consumable: string;
+      gas: string;
+      requiredInputs: string[];
+      machineOutputs: string[];
+      sourcePage: number;
+      warning: string;
+    }
+  | {
       type: "clarification";
       question: string;
       options: string[];

@@ -38,12 +38,14 @@ export const dutyRecords: DutyRecord[] = [
 export const connections: Record<WeldingProcess, {
   summary: string;
   page: number;
+  supportingPages: number[];
   connections: Array<{ label: string; terminal: "positive" | "negative" | "gas" | "workpiece" | "screen"; note: string }>;
   warning: string;
 }> = {
   MIG: {
     summary: "Solid-core, gas-shielded MIG uses DCEP.",
     page: 14,
+    supportingPages: [],
     connections: [
       { label:"Wire-feed power cable", terminal:"positive", note:"Twist clockwise fully to lock." },
       { label:"Ground clamp cable", terminal:"negative", note:"Clamp to clean bare metal near the weld." },
@@ -54,6 +56,7 @@ export const connections: Record<WeldingProcess, {
   "Flux-core": {
     summary: "Self-shielded flux-cored wire uses DCEN.",
     page: 13,
+    supportingPages: [],
     connections: [
       { label:"Wire-feed power cable", terminal:"negative", note:"Twist clockwise fully to lock." },
       { label:"Ground clamp cable", terminal:"positive", note:"Clamp to clean bare metal near the weld." }
@@ -61,8 +64,9 @@ export const connections: Record<WeldingProcess, {
     warning: "Turn the welder off before changing connections. This applies to self-shielded gasless wire."
   },
   TIG: {
-    summary: "For DC TIG on the materials supported by this machine, the torch is normally electrode-negative and the work clamp positive. The OmniPro screen is authoritative.",
-    page: 30,
+    summary: "The TIG setup diagram routes the torch to negative and the ground clamp to positive. Confirm the selected setup on the OmniPro screen.",
+    page: 24,
+    supportingPages: [30],
     connections: [
       { label:"TIG torch", terminal:"negative", note:"Use the connection shown by the selected TIG screen." },
       { label:"Ground clamp cable", terminal:"positive", note:"Clamp to clean bare metal near the weld." },
@@ -72,11 +76,13 @@ export const connections: Record<WeldingProcess, {
     warning: "TIG requires training beyond this manual. Ventilate the area and never weld without the ground clamp."
   },
   Stick: {
-    summary: "Stick polarity depends on the electrode. Follow the electrode package and the OmniPro screen.",
-    page: 31,
+    summary: "Stick polarity depends on the electrode. The manual's standard Stick setup routes the electrode holder to positive and the ground clamp to negative, while the operating screen is authoritative for the selected electrode.",
+    page: 27,
+    supportingPages: [32],
     connections: [
-      { label:"Electrode holder", terminal:"screen", note:"Connect to the terminal specified for the selected electrode." },
-      { label:"Ground clamp cable", terminal:"screen", note:"Connect to the opposite terminal shown by the LCD." }
+      { label:"Electrode holder", terminal:"positive", note:"Page 27 standard layout. Verify against the screen for the selected electrode." },
+      { label:"Ground clamp cable", terminal:"negative", note:"Page 27 standard layout. Verify against the screen for the selected electrode." },
+      { label:"Polarity confirmation", terminal:"screen", note:"Page 32 says to plug both cables according to the screen." }
     ],
     warning: "Do not guess Stick polarity. Check the electrode manufacturer's requirements before energizing."
   }
@@ -156,6 +162,50 @@ export const processGuide: Record<WeldingProcess, {
     skill:"High", gas:"Shielding gas required", materials:["Steel","Stainless steel","Chrome moly"], thickness:"24 gauge to 3/16 inch",
     strengths:["Highest-quality finish","Precise control","Extremely clean welds","Good for thin material"],
     tradeoffs:["Slow and skill intensive","Indoor welding recommended","This machine is DC TIG and is not intended for TIG aluminum"]
+  }
+};
+
+export type SettingsGuide = {
+  page: number;
+  requiredInputs: string[];
+  machineOutputs: string[];
+  materials: string[];
+  consumables: string[];
+  warning: string;
+};
+
+export const settingsGuides: Record<WeldingProcess, SettingsGuide> = {
+  MIG: {
+    page:20,
+    requiredInputs:["Input voltage","Wire diameter","Material","Material thickness","Shielding gas"],
+    machineOutputs:["Recommended wire-feed speed (amperage)","Recommended voltage"],
+    materials:["Mild steel","Stainless steel","Aluminum with optional spool gun"],
+    consumables:["0.025 in solid wire","0.030 in solid wire","0.035 in solid wire","Aluminum wire with optional spool gun"],
+    warning:"Use DCEP for solid-wire gas-shielded MIG. Set gas flow from the machine's settings chart, within the manual's 20-30 SCFH setup range."
+  },
+  "Flux-core": {
+    page:20,
+    requiredInputs:["Input voltage","Wire diameter","Material","Material thickness"],
+    machineOutputs:["Recommended wire-feed speed (amperage)","Recommended voltage"],
+    materials:["Mild steel","Stainless steel"],
+    consumables:["0.030 in flux-cored wire","0.035 in flux-cored wire","0.045 in flux-cored wire"],
+    warning:"Use DCEN for self-shielded flux-cored wire. Do not add shielding gas unless the wire manufacturer explicitly requires it."
+  },
+  TIG: {
+    page:30,
+    requiredInputs:["Input voltage","Rod diameter","Material","Material thickness","Shielding gas"],
+    machineOutputs:["Recommended output amperage","Screen-confirmed polarity and gas setup"],
+    materials:["Mild steel","Stainless steel","Chrome moly"],
+    consumables:["TIG rod diameter from the machine screen"],
+    warning:"This OmniPro uses DC TIG for the listed materials. Set gas flow from the machine's settings chart, within the manual's 10-25 SCFH range."
+  },
+  Stick: {
+    page:32,
+    requiredInputs:["Input voltage","Electrode classification","Electrode diameter","Material","Material thickness"],
+    machineOutputs:["Recommended output amperage","Screen-confirmed polarity","Hot Start and Arc Force options"],
+    materials:["Mild steel","Stainless steel"],
+    consumables:["Electrode classification and diameter from its package"],
+    warning:"Stick polarity depends on the electrode. Follow the electrode package and the OmniPro screen instead of guessing."
   }
 };
 
