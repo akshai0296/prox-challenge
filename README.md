@@ -25,6 +25,8 @@ Open [http://localhost:5173](http://localhost:5173).
 
 When `ANTHROPIC_API_KEY` is present, Arcsmith uses the Claude Agent SDK with custom product tools and resumable conversation sessions. Without a key, a grounded local reasoner still supports the main evaluation flows and refuses unsupported calculations.
 
+The chat composer also accepts JPEG, PNG, and WebP weld photos up to 5 MB. Photo requests use Claude vision to report visible evidence and uncertainty, then anchor the diagnostic workflow to the supplied manual. The image is sent only to the server and the Anthropic key remains server-side.
+
 ```bash
 npm test
 npm run typecheck
