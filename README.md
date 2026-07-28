@@ -6,9 +6,9 @@ This is not a generic PDF chatbot. Technical answers are grounded in a complete 
 
 ## Live demo
 
-The [hosted Arcsmith showcase](https://arcsmith-omnipro.akshai02.chatgpt.site) runs the same grounded local reasoner and interactive artifact UI without requiring an API key. The repository version adds the resumable Claude Agent SDK path when `ANTHROPIC_API_KEY` is present.
+The [live Arcsmith deployment](https://prox-challenge-production-39d1.up.railway.app/) runs this repository with the resumable Claude Agent SDK, grounded product tools, interactive artifacts, and weld-image analysis.
 
-[![Arcsmith interface preview](public/arcsmith-preview.svg)](https://arcsmith-omnipro.akshai02.chatgpt.site)
+[![Arcsmith interface preview](public/arcsmith-preview.svg)](https://prox-challenge-production-39d1.up.railway.app/)
 
 ## Run in under two minutes
 
@@ -160,7 +160,7 @@ Run:
 npm test
 ```
 
-The current suite has 36 cases: 35 pass locally and the live Claude integration case is skipped unless explicitly enabled. The live test checks the real SDK path, tool calls, structured response, exact 200 A / 240 V duty-cycle answer, citation, and artifact:
+The current suite has 39 cases: 38 pass locally and the live Claude integration case is skipped unless explicitly enabled. The live test checks the real SDK path, tool calls, structured response, exact 200 A / 240 V duty-cycle answer, citation, and artifact:
 
 ```bash
 ANTHROPIC_API_KEY=... npm run test:live
@@ -215,7 +215,7 @@ files/                    original challenge documents
 ## Limitations
 
 - Exact wire speed and voltage pairs are not published in the supplied documents. Arcsmith guides users through the machine’s Auto Weld inputs rather than fabricating numbers.
-- Photo-based weld diagnosis and voice are not included.
+- Photo-based weld assessment is limited to visible surface evidence and cannot establish internal condition, structural integrity, or code compliance. Voice is not included.
 - The selection chart is a general process guide, not a substitute for the OmniPro’s material-specific on-screen setup.
 - The live Claude test requires an Anthropic API key and is intentionally not represented as passing when no key is available.
 
