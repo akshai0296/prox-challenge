@@ -85,7 +85,12 @@ export type AgentResponse = CoreAgentResponse & {
 };
 
 export type ChatMessage =
-  | { role: "user"; content: string }
+  | {
+      role: "user";
+      content: string;
+      imageUrl?: string;
+      imageName?: string;
+    }
   | {
       role: "assistant";
       content: string;
