@@ -18,11 +18,9 @@ test("sends the image to Claude and returns grounded visual guidance", async () 
       return new Response(JSON.stringify({
         content:[{type:"text",text:JSON.stringify({
           visibleObservations:["Small surface cavities are visible along the bead."],
-          likelyDefects:[{
-            name:"Possible porosity",
-            confidence:"medium",
-            evidence:"The visible cavities are consistent with surface porosity."
-          }],
+          surfaceAssessment:"possible_porosity",
+          confidence:"medium",
+          assessmentEvidence:"The visible cavities are consistent with surface porosity.",
           limitations:"One photo cannot establish cavity depth.",
           nextQuestion:"Was this gas-shielded MIG or self-shielded flux-core?"
         })}]
@@ -32,6 +30,31 @@ test("sends the image to Claude and returns grounded visual guidance", async () 
   assert.match(response.answer,/surface cavities/i);
   assert.ok(response.citations.some(citation=>citation.page===37));
   assert.ok(response.artifacts.some(artifact=>artifact.type==="checklist"));
+});
+
+test("removes unsupported process inference and citation contradictions", async () => {
+  const response=await runVisionAgent(
+    {dataUrl:"data:image/jpeg;base64,/9j/4AAQ",mediaType:"image/jpeg"},
+    "Inspect this weld",
+    "test-key",
+    async () => new Response(JSON.stringify({
+      content:[{type:"text",text:JSON.stringify({
+        visibleObservations:[
+          "The bead has a repeating ripple pattern.",
+          "This was produced by automated pulsed TIG welding."
+        ],
+        surfaceAssessment:"no_clear_surface_defect",
+        confidence:"medium",
+        assessmentEvidence:"No cavities, spatter, or burn-through are apparent in this view.",
+        limitations:"Manual page citations are not available to this component.",
+        nextQuestion:"What process and material did you use?"
+      })}]
+    }),{status:200})
+  );
+  assert.match(response.answer,/repeating ripple pattern/i);
+  assert.doesNotMatch(response.answer,/automated|pulsed TIG|citations are not available/i);
+  assert.match(response.answer,/manual-grounded comparison/i);
+  assert.deepEqual(response.citations.map(citation=>citation.page),[37,43]);
 });
 
 test("rejects a malformed Claude vision response", async () => {
