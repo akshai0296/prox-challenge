@@ -4,10 +4,11 @@ import express from "express";
 import { clearConversation, runClaudeAgent } from "./agent.js";
 import { runOfflineAgent } from "./offline-agent.js";
 import { getCorpusStats } from "./retrieval.js";
+import { runVisionAgent } from "./vision-agent.js";
 
 const app = express();
 app.disable("x-powered-by");
-app.use(express.json({ limit:"256kb" }));
+app.use(express.json({ limit:"7mb" }));
 
 app.get("/api/health", (_, res) => {
   res.json({
@@ -19,10 +20,26 @@ app.get("/api/health", (_, res) => {
 
 app.post("/api/chat", async (req, res) => {
   const message = typeof req.body?.message === "string" ? req.body.message.trim().slice(0,4000) : "";
+  const image = req.body?.image && typeof req.body.image === "object"
+    ? req.body.image as {dataUrl?: unknown;mediaType?: unknown;name?: unknown}
+    : null;
+  const hasImage = Boolean(
+    image &&
+    typeof image.dataUrl === "string" &&
+    typeof image.mediaType === "string" &&
+    ["image/jpeg","image/png","image/webp"].includes(image.mediaType) &&
+    /^data:image\/(?:jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(image.dataUrl) &&
+    image.dataUrl.length <= 7_100_000
+  );
   const suppliedId = typeof req.body?.conversationId === "string" ? req.body.conversationId : "";
   const conversationId = /^[a-zA-Z0-9-]{8,80}$/.test(suppliedId) ? suppliedId : randomUUID();
   const history = Array.isArray(req.body?.history) ? req.body.history.slice(-12) : [];
-  if (!message) return res.status(400).json({error:"A non-empty message is required."});
+  if (!message && !hasImage) {
+    return res.status(400).json({error:"Add a question or attach a weld photo."});
+  }
+  if (image && !hasImage) {
+    return res.status(400).json({error:"Use a JPEG, PNG, or WebP image no larger than 5 MB."});
+  }
 
   if (!process.env.ANTHROPIC_API_KEY) {
     const response = runOfflineAgent(message,history);
@@ -30,6 +47,17 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
+    if (hasImage && image) {
+      const response = await runVisionAgent(
+        {
+          dataUrl:image.dataUrl as string,
+          mediaType:image.mediaType as "image/jpeg"|"image/png"|"image/webp"
+        },
+        message,
+        process.env.ANTHROPIC_API_KEY
+      );
+      return res.json({...response,mode:"agent",conversationId});
+    }
     const response = await runClaudeAgent(message,conversationId);
     return res.json({...response,mode:"agent",conversationId});
   } catch (error) {
