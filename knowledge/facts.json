@@ -1,0 +1,433 @@
+{
+  "product": {
+    "name": "Vulcan OmniPro 220",
+    "model": "57812",
+    "description": "A 120/240 V multiprocess welder supporting MIG, self-shielded flux-cored, DC TIG, and stick welding.",
+    "processes": ["MIG", "Flux-Cored", "TIG", "Stick"],
+    "inputVoltages": [120, 240],
+    "maximumOpenCircuitVoltage": 86
+  },
+  "documents": [
+    {
+      "id": "owner-manual",
+      "title": "Owner's Manual and Safety Instructions",
+      "pages": 48,
+      "url": "/manuals/owner-manual.pdf"
+    },
+    {
+      "id": "quick-start",
+      "title": "Quick Start Guide",
+      "pages": 2,
+      "url": "/manuals/quick-start-guide.pdf"
+    },
+    {
+      "id": "selection-chart",
+      "title": "How to Choose a Welder",
+      "pages": 1,
+      "url": "/manuals/selection-chart.pdf"
+    }
+  ],
+  "visuals": {
+    "specifications": {
+      "id": "specifications",
+      "title": "Process specifications",
+      "document": "owner-manual",
+      "page": 7,
+      "image": "/manual-pages/owner-7.jpg",
+      "description": "MIG, TIG, and Stick current ranges, rated duty cycles, supported materials, wire sizes, and input requirements.",
+      "keywords": ["specifications", "range", "wire size", "materials", "input", "ocv"]
+    },
+    "front-controls": {
+      "id": "front-controls",
+      "title": "Front panel controls",
+      "document": "owner-manual",
+      "page": 8,
+      "image": "/manual-pages/owner-8.jpg",
+      "description": "Front panel display, selector controls, output sockets, and wire-feed compartment controls.",
+      "keywords": ["front panel", "controls", "display", "socket", "knob"]
+    },
+    "inside-panel": {
+      "id": "inside-panel",
+      "title": "Inside panel and connections",
+      "document": "owner-manual",
+      "page": 9,
+      "image": "/manual-pages/owner-9.jpg",
+      "description": "Wire-feed mechanism, gas connector, spool spindle, polarity cable, and internal sockets.",
+      "keywords": ["inside", "wire feed", "spool", "mechanism", "gas connector"]
+    },
+    "flux-polarity": {
+      "id": "flux-polarity",
+      "title": "Flux-cored DCEN polarity",
+      "document": "owner-manual",
+      "page": 13,
+      "image": "/manual-pages/owner-13.jpg",
+      "description": "Ground clamp in positive socket and wire-feed power cable in negative socket for self-shielded flux-cored welding.",
+      "keywords": ["flux", "flux-cored", "dcen", "polarity", "ground", "positive", "negative"]
+    },
+    "mig-polarity": {
+      "id": "mig-polarity",
+      "title": "MIG DCEP polarity",
+      "document": "owner-manual",
+      "page": 14,
+      "image": "/manual-pages/owner-14.jpg",
+      "description": "Ground clamp in negative socket and wire-feed power cable in positive socket for gas-shielded MIG welding.",
+      "keywords": ["mig", "dcep", "polarity", "ground", "positive", "negative"]
+    },
+    "wire-tension": {
+      "id": "wire-tension",
+      "title": "Wire drive tension check",
+      "document": "owner-manual",
+      "page": 17,
+      "image": "/manual-pages/owner-17.jpg",
+      "description": "How to test and incrementally adjust wire drive tension using a wood block.",
+      "keywords": ["wire", "tension", "feed", "roller", "wood block"]
+    },
+    "mig-duty-cycle": {
+      "id": "mig-duty-cycle",
+      "title": "MIG duty cycles",
+      "document": "owner-manual",
+      "page": 19,
+      "image": "/manual-pages/owner-19.jpg",
+      "description": "MIG duty-cycle diagrams for 120 V and 240 V operation and cooldown instructions.",
+      "keywords": ["duty cycle", "mig", "rest", "overheat", "120", "240"]
+    },
+    "mig-controls": {
+      "id": "mig-controls",
+      "title": "MIG and flux-cored settings screen",
+      "document": "owner-manual",
+      "page": 21,
+      "image": "/manual-pages/owner-21.jpg",
+      "description": "Process, wire type, wire diameter, material thickness, voltage, inductance, and manual wire-speed controls.",
+      "keywords": ["settings", "screen", "wire speed", "voltage", "inductance", "thickness"]
+    },
+    "tig-setup": {
+      "id": "tig-setup",
+      "title": "TIG cable and gas setup",
+      "document": "owner-manual",
+      "page": 24,
+      "image": "/manual-pages/owner-24.jpg",
+      "description": "TIG torch in negative socket, ground clamp in positive socket, foot pedal connection, and shielding-gas hose.",
+      "keywords": ["tig", "torch", "ground", "foot pedal", "argon", "negative", "positive"]
+    },
+    "stick-setup": {
+      "id": "stick-setup",
+      "title": "Stick cable setup",
+      "document": "owner-manual",
+      "page": 27,
+      "image": "/manual-pages/owner-27.jpg",
+      "description": "Electrode holder in positive socket and ground clamp in negative socket for stick welding.",
+      "keywords": ["stick", "electrode holder", "ground", "positive", "negative", "polarity"]
+    },
+    "tig-stick-duty-cycle": {
+      "id": "tig-stick-duty-cycle",
+      "title": "TIG and Stick duty cycles",
+      "document": "owner-manual",
+      "page": 29,
+      "image": "/manual-pages/owner-29.jpg",
+      "description": "Rated TIG and Stick duty cycles at 120 V and 240 V, with cooling and workpiece setup guidance.",
+      "keywords": ["tig", "stick", "duty cycle", "rest", "overheat"]
+    },
+    "wire-diagnosis": {
+      "id": "wire-diagnosis",
+      "title": "Wire-weld diagnosis",
+      "document": "owner-manual",
+      "page": 35,
+      "image": "/manual-pages/owner-35.jpg",
+      "description": "Visual comparison of correct and incorrect wire welds caused by heat, travel speed, wire speed, CTWD, and polarity.",
+      "keywords": ["diagnosis", "penetration", "ctwd", "travel speed", "wire speed", "heat"]
+    },
+    "wire-defects": {
+      "id": "wire-defects",
+      "title": "Wire-weld defect guide",
+      "document": "owner-manual",
+      "page": 37,
+      "image": "/manual-pages/owner-37.jpg",
+      "description": "Visual examples and remedies for porosity, excessive spatter, crooked or wavy beads, and burn-through.",
+      "keywords": ["porosity", "spatter", "wavy", "crooked", "burn-through", "holes"]
+    },
+    "mig-troubleshooting": {
+      "id": "mig-troubleshooting",
+      "title": "MIG and flux-cored troubleshooting",
+      "document": "owner-manual",
+      "page": 42,
+      "image": "/manual-pages/owner-42.jpg",
+      "description": "Troubleshooting table for wire-feed, bird-nesting, unstable arc, and weak arc problems.",
+      "keywords": ["troubleshooting", "wire feed", "bird nest", "arc", "liner", "roller"]
+    },
+    "porosity-troubleshooting": {
+      "id": "porosity-troubleshooting",
+      "title": "Porosity troubleshooting table",
+      "document": "owner-manual",
+      "page": 43,
+      "image": "/manual-pages/owner-43.jpg",
+      "description": "Troubleshooting table for power, display, ignition, and porosity issues.",
+      "keywords": ["porosity", "gas", "dirty", "ctwd", "polarity", "power"]
+    },
+    "tig-stick-troubleshooting": {
+      "id": "tig-stick-troubleshooting",
+      "title": "TIG and Stick troubleshooting",
+      "document": "owner-manual",
+      "page": 44,
+      "image": "/manual-pages/owner-44.jpg",
+      "description": "Troubleshooting table for TIG and Stick power, display, weak arc, unstable arc, and shielding gas problems.",
+      "keywords": ["tig", "stick", "troubleshooting", "arc", "shielding gas"]
+    },
+    "wiring-schematic": {
+      "id": "wiring-schematic",
+      "title": "Electrical wiring schematic",
+      "document": "owner-manual",
+      "page": 45,
+      "image": "/manual-pages/owner-45.jpg",
+      "description": "Full internal electrical wiring schematic intended for qualified service technicians.",
+      "keywords": ["wiring", "schematic", "service", "electrical", "circuit"]
+    },
+    "quick-wire-load": {
+      "id": "quick-wire-load",
+      "title": "Quick wire loading guide",
+      "document": "quick-start",
+      "page": 1,
+      "image": "/manual-pages/quick-1.jpg",
+      "description": "Wire-spool loading path and short drive-tension check.",
+      "keywords": ["quick start", "wire load", "spool", "feed", "tension"]
+    },
+    "process-selection": {
+      "id": "process-selection",
+      "title": "Welding process selection chart",
+      "document": "selection-chart",
+      "page": 1,
+      "image": "/manual-pages/selection-chart.jpg",
+      "description": "Visual comparison of flux-cored, MIG, Stick, and TIG by skill, gas, material, thickness, application, and finish.",
+      "keywords": ["choose", "process", "flux", "mig", "stick", "tig", "material", "thickness"]
+    }
+  },
+  "dutyCycles": [
+    {"process": "MIG", "voltage": 120, "amperage": 100, "dutyPercent": 40, "weldMinutes": 4, "restMinutes": 6, "document": "owner-manual", "page": 19, "visualId": "mig-duty-cycle"},
+    {"process": "MIG", "voltage": 120, "amperage": 85, "dutyPercent": 60, "weldMinutes": 6, "restMinutes": 4, "document": "owner-manual", "page": 27, "visualId": "mig-duty-cycle"},
+    {"process": "MIG", "voltage": 120, "amperage": 75, "dutyPercent": 100, "weldMinutes": 10, "restMinutes": 0, "document": "owner-manual", "page": 19, "visualId": "mig-duty-cycle"},
+    {"process": "MIG", "voltage": 240, "amperage": 200, "dutyPercent": 25, "weldMinutes": 2.5, "restMinutes": 7.5, "document": "owner-manual", "page": 19, "visualId": "mig-duty-cycle"},
+    {"process": "MIG", "voltage": 240, "amperage": 130, "dutyPercent": 60, "weldMinutes": 6, "restMinutes": 4, "document": "owner-manual", "page": 27, "visualId": "mig-duty-cycle"},
+    {"process": "MIG", "voltage": 240, "amperage": 115, "dutyPercent": 100, "weldMinutes": 10, "restMinutes": 0, "document": "owner-manual", "page": 19, "visualId": "mig-duty-cycle"},
+    {"process": "Flux-Cored", "voltage": 120, "amperage": 100, "dutyPercent": 40, "weldMinutes": 4, "restMinutes": 6, "document": "owner-manual", "page": 19, "visualId": "mig-duty-cycle"},
+    {"process": "Flux-Cored", "voltage": 120, "amperage": 85, "dutyPercent": 60, "weldMinutes": 6, "restMinutes": 4, "document": "owner-manual", "page": 27, "visualId": "mig-duty-cycle"},
+    {"process": "Flux-Cored", "voltage": 120, "amperage": 75, "dutyPercent": 100, "weldMinutes": 10, "restMinutes": 0, "document": "owner-manual", "page": 19, "visualId": "mig-duty-cycle"},
+    {"process": "Flux-Cored", "voltage": 240, "amperage": 200, "dutyPercent": 25, "weldMinutes": 2.5, "restMinutes": 7.5, "document": "owner-manual", "page": 19, "visualId": "mig-duty-cycle"},
+    {"process": "Flux-Cored", "voltage": 240, "amperage": 130, "dutyPercent": 60, "weldMinutes": 6, "restMinutes": 4, "document": "owner-manual", "page": 27, "visualId": "mig-duty-cycle"},
+    {"process": "Flux-Cored", "voltage": 240, "amperage": 115, "dutyPercent": 100, "weldMinutes": 10, "restMinutes": 0, "document": "owner-manual", "page": 19, "visualId": "mig-duty-cycle"},
+    {"process": "TIG", "voltage": 120, "amperage": 125, "dutyPercent": 40, "weldMinutes": 4, "restMinutes": 6, "document": "owner-manual", "page": 29, "visualId": "tig-stick-duty-cycle"},
+    {"process": "TIG", "voltage": 120, "amperage": 105, "dutyPercent": 60, "weldMinutes": 6, "restMinutes": 4, "document": "owner-manual", "page": 27, "visualId": "tig-stick-duty-cycle"},
+    {"process": "TIG", "voltage": 120, "amperage": 90, "dutyPercent": 100, "weldMinutes": 10, "restMinutes": 0, "document": "owner-manual", "page": 29, "visualId": "tig-stick-duty-cycle"},
+    {"process": "TIG", "voltage": 240, "amperage": 175, "dutyPercent": 30, "weldMinutes": 3, "restMinutes": 7, "document": "owner-manual", "page": 29, "visualId": "tig-stick-duty-cycle"},
+    {"process": "TIG", "voltage": 240, "amperage": 125, "dutyPercent": 60, "weldMinutes": 6, "restMinutes": 4, "document": "owner-manual", "page": 27, "visualId": "tig-stick-duty-cycle"},
+    {"process": "TIG", "voltage": 240, "amperage": 105, "dutyPercent": 100, "weldMinutes": 10, "restMinutes": 0, "document": "owner-manual", "page": 29, "visualId": "tig-stick-duty-cycle"},
+    {"process": "Stick", "voltage": 120, "amperage": 80, "dutyPercent": 40, "weldMinutes": 4, "restMinutes": 6, "document": "owner-manual", "page": 29, "visualId": "tig-stick-duty-cycle"},
+    {"process": "Stick", "voltage": 120, "amperage": 70, "dutyPercent": 60, "weldMinutes": 6, "restMinutes": 4, "document": "owner-manual", "page": 27, "visualId": "tig-stick-duty-cycle"},
+    {"process": "Stick", "voltage": 120, "amperage": 60, "dutyPercent": 100, "weldMinutes": 10, "restMinutes": 0, "document": "owner-manual", "page": 29, "visualId": "tig-stick-duty-cycle"},
+    {"process": "Stick", "voltage": 240, "amperage": 175, "dutyPercent": 25, "weldMinutes": 2.5, "restMinutes": 7.5, "document": "owner-manual", "page": 29, "visualId": "tig-stick-duty-cycle"},
+    {"process": "Stick", "voltage": 240, "amperage": 115, "dutyPercent": 60, "weldMinutes": 6, "restMinutes": 4, "document": "owner-manual", "page": 27, "visualId": "tig-stick-duty-cycle"},
+    {"process": "Stick", "voltage": 240, "amperage": 100, "dutyPercent": 100, "weldMinutes": 10, "restMinutes": 0, "document": "owner-manual", "page": 29, "visualId": "tig-stick-duty-cycle"}
+  ],
+  "polarity": {
+    "mig": {
+      "id": "mig",
+      "label": "MIG / solid-core with shielding gas",
+      "polarity": "DCEP",
+      "electrode": "Wire-feed power cable",
+      "electrodeSocket": "positive",
+      "groundSocket": "negative",
+      "gas": "Shielding gas required; use the wire supplier's recommendation and the chart inside the welder door.",
+      "document": "owner-manual",
+      "page": 14,
+      "visualId": "mig-polarity"
+    },
+    "flux-cored": {
+      "id": "flux-cored",
+      "label": "Self-shielded flux-cored",
+      "polarity": "DCEN",
+      "electrode": "Wire-feed power cable",
+      "electrodeSocket": "negative",
+      "groundSocket": "positive",
+      "gas": "No external shielding gas for the self-shielded setup described by the manual.",
+      "document": "owner-manual",
+      "page": 13,
+      "visualId": "flux-polarity"
+    },
+    "tig": {
+      "id": "tig",
+      "label": "DC TIG",
+      "polarity": "DCEN",
+      "electrode": "TIG torch cable",
+      "electrodeSocket": "negative",
+      "groundSocket": "positive",
+      "gas": "100% argon is specified by the manual.",
+      "document": "owner-manual",
+      "page": 24,
+      "visualId": "tig-setup"
+    },
+    "stick": {
+      "id": "stick",
+      "label": "Stick",
+      "polarity": "DCEP setup shown by the manual",
+      "electrode": "Electrode-holder cable",
+      "electrodeSocket": "positive",
+      "groundSocket": "negative",
+      "gas": "No external shielding gas.",
+      "document": "owner-manual",
+      "page": 27,
+      "visualId": "stick-setup"
+    }
+  },
+  "troubleshooting": {
+    "porosity": {
+      "id": "porosity",
+      "title": "Porosity: small cavities or holes in the bead",
+      "visualId": "wire-defects",
+      "document": "owner-manual",
+      "pages": [37, 43],
+      "safety": "Shut off and disconnect the welder before adjusting, cleaning, or repairing it.",
+      "checks": [
+        {"cause": "Incorrect polarity", "action": "Use DCEP for gas-shielded MIG and DCEN for self-shielded flux-cored welding."},
+        {"cause": "Dirty workpiece or wire", "action": "Clean the workpiece to bare metal and use wire free of rust, oil, coatings, and residue."},
+        {"cause": "CTWD is too long", "action": "Move the contact tip closer and maintain the procedure's proper contact-tip-to-work distance."},
+        {"cause": "Inconsistent travel speed", "action": "Maintain a steady travel speed."},
+        {"cause": "Incorrect or insufficient shielding gas", "action": "For MIG only, verify the bottle, regulator, recommended gas, nozzle cleanliness, and flow rate. This check does not apply to self-shielded flux-cored wire."},
+        {"cause": "Gun is too far from the workpiece", "action": "Correct the gun position and CTWD."}
+      ]
+    },
+    "excessive-spatter": {
+      "id": "excessive-spatter",
+      "title": "Excessive spatter",
+      "visualId": "wire-defects",
+      "document": "owner-manual",
+      "pages": [37],
+      "safety": "Fine spatter is normal. Grainy, large spatter indicates a problem.",
+      "checks": [
+        {"cause": "Dirty workpiece or wire", "action": "Clean the workpiece to bare metal and remove oil, coatings, or residue from the wire."},
+        {"cause": "Incorrect polarity", "action": "Verify DCEP for MIG or DCEN for self-shielded flux-cored."},
+        {"cause": "Insufficient shielding gas", "action": "For MIG, increase flow, clean the nozzle, and verify CTWD."},
+        {"cause": "Wire feed is too fast", "action": "Reduce wire-feed speed."},
+        {"cause": "CTWD is too long", "action": "Reduce CTWD."}
+      ]
+    },
+    "burn-through": {
+      "id": "burn-through",
+      "title": "Burn-through",
+      "visualId": "wire-defects",
+      "document": "owner-manual",
+      "pages": [35, 37],
+      "safety": "Practice on scrap of the same thickness before welding the workpiece.",
+      "checks": [
+        {"cause": "Workpiece overheating", "action": "Reduce current and/or wire-feed speed."},
+        {"cause": "Travel speed is too slow", "action": "Increase travel speed and keep it steady."},
+        {"cause": "Excessive material at the weld", "action": "Reduce wire-feed speed."}
+      ]
+    },
+    "wire-feed": {
+      "id": "wire-feed",
+      "title": "Wire-feed motor runs but wire does not feed correctly",
+      "visualId": "mig-troubleshooting",
+      "document": "owner-manual",
+      "pages": [17, 42],
+      "safety": "Shut off the welder, disconnect it from power, and discharge the MIG gun to ground before adjustments.",
+      "checks": [
+        {"cause": "Insufficient feed pressure", "action": "Increase feed pressure incrementally using the drive-tension test on page 17."},
+        {"cause": "Incorrect roller groove", "action": "Flip or replace the feed roller so the groove matches the wire diameter."},
+        {"cause": "Damaged gun, cable, or liner", "action": "Have a qualified technician inspect and replace damaged parts."},
+        {"cause": "Feed tensioner is too tight", "action": "Loosen it until it applies only enough pressure to stop spool overrun."}
+      ]
+    },
+    "bird-nest": {
+      "id": "bird-nest",
+      "title": "Wire creates a bird's nest",
+      "visualId": "mig-troubleshooting",
+      "document": "owner-manual",
+      "pages": [13, 17, 42],
+      "safety": "Disconnect power before opening or adjusting the wire-feed compartment.",
+      "checks": [
+        {"cause": "Excess wire-feed pressure", "action": "Readjust drive pressure using the page 17 test."},
+        {"cause": "Incorrect contact-tip size", "action": "Install the correct tip for the wire diameter."},
+        {"cause": "Gun cable connector is not fully seated", "action": "Fully insert the connector into the wire-feed mechanism and tighten it as shown on page 13."},
+        {"cause": "Damaged liner", "action": "Have the liner inspected and replaced."}
+      ]
+    },
+    "unstable-arc": {
+      "id": "unstable-arc",
+      "title": "Unstable welding arc",
+      "visualId": "mig-troubleshooting",
+      "document": "owner-manual",
+      "pages": [42, 44],
+      "safety": "Stop welding before checking connections or consumables.",
+      "checks": [
+        {"cause": "Wire-feed or consumable problem", "action": "Verify wire feed, contact-tip size, liner size, and wear."},
+        {"cause": "Incorrect wire-feed speed or current", "action": "Adjust the setting to match the manual and door chart."},
+        {"cause": "Loose cable or poor ground", "action": "Tighten all cable connections and attach the ground clamp to clean bare metal."},
+        {"cause": "Incorrect polarity", "action": "Use DCEP for MIG and DCEN for self-shielded flux-cored."},
+        {"cause": "Incorrect gas coverage", "action": "For MIG or TIG, verify the specified gas and flow without exposing O-rings at the connector."}
+      ]
+    },
+    "no-power": {
+      "id": "no-power",
+      "title": "Welder does not function when switched on",
+      "visualId": "porosity-troubleshooting",
+      "document": "owner-manual",
+      "pages": [43, 44],
+      "safety": "Do not open or service energized equipment. Electrical repairs require a qualified technician.",
+      "checks": [
+        {"cause": "Thermal protection tripped", "action": "Leave the power switch on and allow the internal fan to cool the welder, then shorten future welding periods."},
+        {"cause": "Insufficient or out-of-range input", "action": "Verify the outlet and circuit meet the voltage and amperage specifications."},
+        {"cause": "Improperly connected trigger or cable", "action": "Check that external connections are fully seated; internal trigger repairs require a technician."},
+        {"cause": "Low- or over-voltage protection", "action": "Correct the input voltage, then use the rear reset button."},
+        {"cause": "Incorrect process mode", "action": "Select the intended welding process."}
+      ]
+    }
+  },
+  "processGuide": [
+    {
+      "id": "flux-cored",
+      "name": "Flux-Cored / FCAW",
+      "skill": "beginner",
+      "gas": "not required for self-shielded wire",
+      "materials": ["steel", "stainless steel"],
+      "thickness": "18 gauge to 5/16 inch",
+      "bestFor": ["outdoor or windy conditions", "rusty or dirty steel", "out-of-position welds", "high deposition"],
+      "finish": "More spatter and slag cleanup",
+      "productCaveat": "Use DCEN and self-shielded flux-cored wire.",
+      "visualId": "process-selection"
+    },
+    {
+      "id": "mig",
+      "name": "MIG / GMAW",
+      "skill": "beginner",
+      "gas": "required",
+      "materials": ["steel", "stainless steel", "aluminum with optional spool gun"],
+      "thickness": "22 gauge to 3/8 inch",
+      "bestFor": ["sheet metal", "automotive bodywork", "tubing", "structural steel", "fast production"],
+      "finish": "Clean welds with minimal spatter",
+      "productCaveat": "Use DCEP. Aluminum requires the optional spool gun.",
+      "visualId": "process-selection"
+    },
+    {
+      "id": "stick",
+      "name": "Stick / SMAW",
+      "skill": "intermediate",
+      "gas": "not required",
+      "materials": ["steel", "stainless steel", "castings"],
+      "thickness": "10 gauge to 1/2 inch",
+      "bestFor": ["outdoor or windy conditions", "thicker material", "pipe and tubing", "repair work"],
+      "finish": "More spatter and slag cleanup",
+      "productCaveat": "The manual's setup places the electrode holder in positive and ground in negative.",
+      "visualId": "process-selection"
+    },
+    {
+      "id": "tig",
+      "name": "DC TIG / GTAW",
+      "skill": "advanced",
+      "gas": "100% argon required",
+      "materials": ["mild steel", "stainless steel", "chrome moly"],
+      "thickness": "24 gauge to 3/16 inch",
+      "bestFor": ["highest-quality welds", "aesthetic finish", "thin-wall tubing", "precise heat control"],
+      "finish": "Extremely clean",
+      "productCaveat": "The OmniPro 220 provides DC TIG. It does not provide the AC TIG required for aluminum or magnesium.",
+      "visualId": "process-selection"
+    }
+  ]
+}
